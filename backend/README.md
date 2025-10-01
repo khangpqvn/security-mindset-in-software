@@ -47,26 +47,38 @@ CREATE TABLE users (
 Chèn người dùng mẫu:
 
 ```sql
-INSERT INTO users (username, password,email)
-VALUES ('admin', 'admin123',"khangpq.vn@gmail.com");
+INSERT INTO users (username, password, email)
+VALUES ('admin', 'admin123', 'user@example.com');
 ```
 
-Lưu ý: Thay hash theo môi trường của bạn nếu cần.
+Lưu ý: Đây là demo dùng mật khẩu dạng plain để khớp logic đăng nhập hiện tại. Khi triển khai thực tế, hãy lưu mật khẩu dạng hash và dùng quy trình đặt lại bằng token/OTP an toàn.
 
 ### API
 
 - `POST /api/auth/login`
   - Body JSON: `{ "username": string, "password": string }`
-  - Response: `true` nếu xác thực thành công, ngược lại `false`.
+  - Response: `{ status: boolean }` — `true` nếu xác thực thành công, ngược lại `false`.
 
 - `POST /api/auth/forgot`
   - Body JSON: `{ "email": string }`
   - Response: `{ status: boolean }` — nếu tìm thấy email và gửi mail thành công sẽ trả `true`.
-  - Demo này cập nhật cột `password` trực tiếp để phù hợp với logic đăng nhập hiện tại. Trong môi trường thật, nên dùng token đặt lại mật khẩu và hash mật khẩu.
+  - Demo cập nhật cột `password` trực tiếp để phù hợp với logic đăng nhập hiện tại. Trong môi trường thật, nên dùng reset token và hash mật khẩu.
+
+- `POST /api/auth/otp/request`
+  - Body JSON: `{ "email": string }`
+  - Response: `{ status: boolean }` — gửi OTP 6 số đến email, OTP hết hạn sau 10 phút.
+
+- `POST /api/auth/otp/verify`
+  - Body JSON: `{ "email": string, "otp": string, "newPassword": string }`
+  - Response: `{ status: boolean }` — nếu OTP hợp lệ và chưa hết hạn sẽ đổi mật khẩu.
 
 ### Static `public`
 
-Thư mục `public/` được phục vụ tĩnh. Truy cập `http://localhost:3000/` để mở trang demo login.
+Thư mục `public/` được phục vụ tĩnh. Các trang chính:
+- `index.html`: form đăng nhập (có CAPTCHA). Khi đăng nhập thành công sẽ điều hướng về `home.html`.
+- `home.html`: yêu cầu đã đăng nhập (dùng localStorage flag). Có bảng ảnh tải từ `https://jsonplaceholder.typicode.com/photos` với ô tìm kiếm.
+- `forgot.html`: flow 1 — nhập email để đặt lại mật khẩu, hệ thống gửi mật khẩu mới qua email.
+- `forgot-otp.html` và `reset-otp.html`: flow 2 — yêu cầu OTP và xác thực OTP để người dùng tự đặt mật khẩu mới.
 
 ### Quên mật khẩu
 
