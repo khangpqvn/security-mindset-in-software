@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nhập OTP và đặt mật khẩu</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    form { display: grid; gap: 0.5rem; max-width: 360px; }
+    input, button { padding: 0.5rem; font-size: 1rem; }
+    a { color: #2563eb; text-decoration: none; }
+  </style>
+  </head>
+  <body>
+    <h1>Nhập OTP để đặt lại mật khẩu</h1>
+    <form id="otp-verify-form">
+      <input name="email" type="email" placeholder="Email" required />
+      <input name="otp" placeholder="Mã OTP" required />
+      <input name="newPassword" type="password" placeholder="Mật khẩu mới" required />
+      <button type="submit">Đặt lại mật khẩu</button>
+      <a href="/">← Quay lại đăng nhập</a>
+    </form>
+    <p>Kết quả: <span id="result">(chưa gửi)</span></p>
+    <script>
+      const form = document.getElementById('otp-verify-form');
+
+      // Nếu có email trong query, điền sẵn
+      const params = new URLSearchParams(window.location.search);
+      const email = params.get('email');
+      if (email) {
+        form.elements.email.value = email;
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        const res = await fetch('/api/auth/otp/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const out = await res.json();
+        if (out && out.status) {
+          document.getElementById('result').textContent = 'Đổi mật khẩu thành công. Quay lại đăng nhập...';
+          setTimeout(() => { window.location.href = '/'; }, 1200);
+        } else {
+          document.getElementById('result').textContent = 'OTP không đúng hoặc đã hết hạn.';
+        }
+      });
+    </script>
+  </body>
+  </html>
+
+

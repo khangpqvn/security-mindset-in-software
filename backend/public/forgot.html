@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quên mật khẩu</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    form { display: grid; gap: 0.5rem; max-width: 360px; }
+    input, button { padding: 0.5rem; font-size: 1rem; }
+    a { color: #2563eb; text-decoration: none; }
+  </style>
+  </head>
+  <body>
+    <h1>Quên mật khẩu</h1>
+    <form id="forgot-form">
+      <input name="email" type="email" placeholder="Email của bạn" required />
+      <button type="submit">Gửi yêu cầu đặt lại</button>
+      <a href="/">← Quay lại đăng nhập</a>
+    </form>
+    <p>Kết quả: <span id="result">(chưa gửi)</span></p>
+    <script>
+      const form = document.getElementById('forgot-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        const res = await fetch('/api/auth/forgot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const out = await res.json();
+        document.getElementById('result').textContent = out && out.status ? 'Đã gửi email đặt lại mật khẩu' : 'Không tìm thấy email hoặc lỗi gửi mail';
+      });
+    </script>
+  </body>
+  </html>
+
+
