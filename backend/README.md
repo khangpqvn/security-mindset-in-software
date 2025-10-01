@@ -29,9 +29,23 @@ SMTP_SECURE=false
 SMTP_USER=user@example.com
 SMTP_PASS=your_password
 MAIL_FROM=no-reply@example.com
+
+# Tài khoản admin mặc định khi khởi tạo DB tự động
+DEFAULT_ADMIN_USER=admin
+DEFAULT_ADMIN_PASS=admin123
+DEFAULT_ADMIN_EMAIL=admin@example.com
 ```
 
-### Cơ sở dữ liệu tối thiểu
+### Khởi tạo cơ sở dữ liệu tự động
+
+- Khi server khởi động, code sẽ tự:
+  - Tạo database nếu chưa tồn tại (`DB_NAME`).
+  - Tạo bảng `users` nếu chưa có.
+  - Chèn một tài khoản admin mặc định nếu chưa tồn tại (cấu hình qua biến `DEFAULT_ADMIN_*` ở trên).
+
+Bạn không nhất thiết phải chạy các lệnh SQL thủ công bên dưới, chỉ cần đảm bảo MySQL hoạt động và `.env` đúng.
+
+### (Tùy chọn) Tạo thủ công
 
 Tạo bảng `users`:
 
