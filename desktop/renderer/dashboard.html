@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Desktop Dashboard</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 1rem; }
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr); }
+    .card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem; box-shadow: 0 3px 10px rgba(0,0,0,0.05); background: #fff; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .muted { color: #6b7280; }
+    nav a { margin-right: 0.75rem; color: #2563eb; text-decoration: none; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.5rem; border-bottom: 1px solid #e5e7eb; text-align: left; }
+  </style>
+  <script>
+    (function guard() {
+      if (sessionStorage.getItem('auth') !== '1') {
+        window.location.replace('./login.html');
+      }
+    })();
+  </script>
+  </head>
+  <body>
+    <header>
+      <h1>Bảng điều khiển</h1>
+      <div>
+        <button onclick="sessionStorage.clear(); location.href='./login.html'">Đăng xuất</button>
+      </div>
+    </header>
+    <nav>
+      <a href="#">Tổng quan</a>
+      <a href="#">Người dùng</a>
+      <a href="#">Báo cáo</a>
+      <a href="#">Cấu hình</a>
+    </nav>
+    <div class="grid">
+      <section class="card col-4">
+        <h3>Thống kê nhanh</h3>
+        <p class="muted">Số user hoạt động hôm nay: 128</p>
+        <p class="muted">Số đơn hàng: 56</p>
+        <p class="muted">Tỉ lệ chuyển đổi: 3.4%</p>
+      </section>
+      <section class="card col-8">
+        <h3>Đồ thị lưu lượng</h3>
+        <div style="height: 180px; background: linear-gradient(180deg, #bfdbfe, #fff); border-radius: 8px;"></div>
+      </section>
+      <section class="card col-6">
+        <h3>Bảng công việc</h3>
+        <table>
+          <thead>
+            <tr><th>Việc</th><th>Trạng thái</th><th>Ưu tiên</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Kiểm tra dữ liệu</td><td>Đang làm</td><td>Cao</td></tr>
+            <tr><td>Đồng bộ kho</td><td>Đang chờ</td><td>Trung bình</td></tr>
+            <tr><td>Backup</td><td>Hoàn tất</td><td>Thấp</td></tr>
+          </tbody>
+        </table>
+      </section>
+      <section class="card col-6">
+        <h3>Thông báo hệ thống</h3>
+        <ul>
+          <li>12:03 - Hoàn tất job ETL sáng</li>
+          <li>11:35 - Cảnh báo dung lượng trên server-2</li>
+          <li>10:20 - Cập nhật phiên bản app 1.0.3</li>
+        </ul>
+      </section>
+    </div>
+  </body>
+  </html>
+
+

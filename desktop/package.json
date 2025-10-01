@@ -1,0 +1,16 @@
+{
+  "name": "security-mindset-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "main": "main.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^31.3.0"
+  }
+}
+
+
