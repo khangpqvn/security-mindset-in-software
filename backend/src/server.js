@@ -19,8 +19,13 @@ app.use(express.static(publicDir));
 app.use('/api', require('./routes'));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-	console.log(`Server running on http://localhost:${PORT}`);
-});
+const { initDatabase } = require('./db');
+
+(async () => {
+	await initDatabase();
+	app.listen(PORT, () => {
+		console.log(`Server running on http://localhost:${PORT}`);
+	});
+})();
 
 
