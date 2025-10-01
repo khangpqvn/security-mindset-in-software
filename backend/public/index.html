@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backend Public</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    form { display: grid; gap: 0.5rem; max-width: 320px; }
+    input, button { padding: 0.5rem; font-size: 1rem; }
+    .captcha { display: grid; gap: 0.25rem; align-items: center; }
+    .captcha-row { display: flex; gap: 0.5rem; align-items: center; }
+    .captcha-box { padding: 0.5rem 0.75rem; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; font-weight: 600; letter-spacing: 1px; user-select: none; }
+    .link-btn { background: none; border: none; color: #2563eb; cursor: pointer; padding: 0; }
+  </style>
+  </head>
+  <body>
+    <h1>Đăng nhập (demo)</h1>
+    <form id="login-form">
+      <input name="username" placeholder="Username" required />
+      <input name="password" type="password" placeholder="Password" required />
+      <div class="captcha">
+        <label for="captchaInput">Nhập kết quả captcha để tiếp tục:</label>
+        <div class="captcha-row">
+          <span id="captchaText" class="captcha-box"></span>
+          <button id="refreshCaptcha" type="button" class="link-btn" title="Đổi captcha">↻ Đổi</button>
+        </div>
+        <input id="captchaInput" name="captcha" placeholder="Nhập kết quả" required />
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    <p>Kết quả: <span id="result">(chưa gửi)</span></p>
+    <script>
+      const form = document.getElementById('login-form');
+      const captchaTextEl = document.getElementById('captchaText');
+      const captchaInputEl = document.getElementById('captchaInput');
+      const refreshBtn = document.getElementById('refreshCaptcha');
+
+      let captchaAnswer = '';
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function generateCaptcha() {
+        // Simple arithmetic captcha: a + b or a - b
+        const a = randomInt(10, 99);
+        const b = randomInt(1, 9);
+        const isAdd = Math.random() < 0.5;
+        const text = isAdd ? `${a} + ${b} = ?` : `${a} - ${b} = ?`;
+        const ans = isAdd ? (a + b) : (a - b);
+        captchaAnswer = String(ans);
+        captchaTextEl.textContent = text;
+        captchaInputEl.value = '';
+      }
+
+      refreshBtn.addEventListener('click', () => {
+        generateCaptcha();
+        captchaInputEl.focus();
+      });
+
+      // init
+      generateCaptcha();
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userCaptcha = (captchaInputEl.value || '').trim();
+        if (userCaptcha !== captchaAnswer) {
+          document.getElementById('result').textContent = 'Captcha không đúng';
+          generateCaptcha();
+          captchaInputEl.focus();
+          return;
+        }
+        const data = Object.fromEntries(new FormData(form).entries());
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const ok = await res.json();
+        console.log({ok});
+        document.getElementById('result').textContent = String(ok.status);
+        // Đổi captcha cho lần sau
+        generateCaptcha();
+      });
+    </script>
+  </body>
+  </html>
+
+
