@@ -79,7 +79,12 @@
         });
         const ok = await res.json();
         console.log({ok});
-        document.getElementById('result').textContent = String(ok.status);
+        document.getElementById('result').textContent = String(ok.status?'Đăng nhập thành công':'Đăng nhập thất bại');
+        if (ok && ok.status === true) {
+          try { localStorage.setItem('auth', '1'); } catch (e) {}
+          window.location.href = '/home.html';
+          return;
+        }
         // Đổi captcha cho lần sau
         generateCaptcha();
       });

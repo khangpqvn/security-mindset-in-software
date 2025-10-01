@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    button { padding: 0.5rem 0.75rem; font-size: 1rem; }
+    .controls { display: flex; gap: 1rem; align-items: center; margin: 1rem 0; }
+    input[type="search"] { padding: 0.5rem; font-size: 1rem; width: 320px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.5rem; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: top; }
+    thead th { position: sticky; top: 0; background: #f9fafb; }
+    img.thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #e5e7eb; }
+    .muted { color: #6b7280; font-size: 0.9rem; }
+  </style>
+  <script>
+    (function guard() {
+      try {
+        const flag = localStorage.getItem('auth');
+        if (flag !== '1') {
+          window.location.replace('/');
+        }
+      } catch (e) {
+        window.location.replace('/');
+      }
+    })();
+  </script>
+  </head>
+  <body>
+    <h1>Chào mừng bạn!</h1>
+    <p>Bạn đã đăng nhập thành công.</p>
+    <button id="logout">Đăng xuất</button>
+    <div class="controls">
+      <input id="search" type="search" placeholder="Tìm theo tiêu đề..." />
+      <span id="count" class="muted"></span>
+    </div>
+    <div style="overflow:auto; max-height: 70vh; border: 1px solid #e5e7eb; border-radius: 8px;">
+      <table id="photos">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tiêu đề</th>
+            <th>Ảnh</th>
+            <th>Liên kết</th>
+          </tr>
+        </thead>
+        <tbody id="photos-body"></tbody>
+      </table>
+    </div>
+    <script>
+      document.getElementById('logout').addEventListener('click', () => {
+        try { localStorage.removeItem('auth'); } catch (e) {}
+        window.location.replace('/');
+      });
+      const API = 'https://jsonplaceholder.typicode.com/photos';
+      const tbody = document.getElementById('photos-body');
+      const search = document.getElementById('search');
+      const countEl = document.getElementById('count');
+
+      let all = [];
+      let filtered = [];
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function render(rows) {
+        const html = rows.map(p => `
+          <tr>
+            <td>${p.id}</td>
+            <td>${escapeHtml(p.title)}</td>
+            <td><img class="thumb" src="${p.thumbnailUrl}" alt="thumb ${p.id}"></td>
+            <td><a href="${p.url}" target="_blank" rel="noopener">Mở ảnh</a></td>
+          </tr>
+        `).join('');
+        tbody.innerHTML = html;
+        countEl.textContent = rows.length + ' mục';
+      }
+
+      async function load() {
+        try {
+          const res = await fetch(API);
+          const data = await res.json();
+          all = Array.isArray(data) ? data : [];
+          filtered = all;
+          // Mặc định hiển thị 200 mục đầu để nhẹ trang; người dùng có thể tìm kiếm để lọc
+          render(filtered.slice(0, 200));
+        } catch (e) {
+          tbody.innerHTML = '<tr><td colspan="4">Không tải được dữ liệu</td></tr>';
+          countEl.textContent = '';
+        }
+      }
+
+      search.addEventListener('input', () => {
+        const q = search.value.trim().toLowerCase();
+        if (!q) {
+          render(all.slice(0, 200));
+          return;
+        }
+        filtered = all.filter(p => String(p.title).toLowerCase().includes(q));
+        render(filtered.slice(0, 200));
+      });
+
+      load();
+    </script>
+  </body>
+  </html>
+
+
