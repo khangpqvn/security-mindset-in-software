@@ -1,0 +1,2 @@
+adb shell am start -n com.fpt.khangpq.securitymindset/com.fpt.khangpq.securitymindset.Home
+adb shell am start -n com.fpt.khangpq.securitymindset/.MainActivity
