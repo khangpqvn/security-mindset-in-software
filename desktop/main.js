@@ -1,14 +1,16 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, Menu } = require('electron');
 const path = require('path');
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 1000,
     height: 700,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+  win.setMenuBarVisibility(false);
   win.loadFile(path.join(__dirname, 'renderer', 'login.html'));
 
   // Optional: open external links in default browser
@@ -19,6 +21,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  Menu.setApplicationMenu(null);
   createWindow();
 
   app.on('activate', () => {
